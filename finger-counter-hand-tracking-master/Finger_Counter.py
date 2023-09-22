@@ -25,7 +25,7 @@ detector = ht.HandDetector(detection_confidence=0.70)
 
 tip_id = [4, 8, 12, 16, 20]
 
-while True:
+while cap.isOpened() :
     success, img = cap.read()
     img = detector.find_hands(img)
 
