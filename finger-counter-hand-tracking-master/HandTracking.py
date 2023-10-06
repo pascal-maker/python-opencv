@@ -6,15 +6,17 @@ mp.solutions.hands.Hands()
 
 class HandDetector:
     def __init__(self, mode=False, max_hands=2, detection_confidence=0.5, tracking_confidence=0.5):
-
         self.mode = mode
         self.max_hands = max_hands
         self.detection_confidence = detection_confidence
         self.tracking_confidence = tracking_confidence
 
-        self.hands = mp.solutions.hands.Hands(static_image_mode=self.mode, max_num_hands=self.max_hands,
-                                              min_tracking_confidence=self.tracking_confidence,
-                                              min_detection_confidence=self.detection_confidence)
+        self.hands = mp.solutions.hands.Hands(
+            static_image_mode=self.mode,
+            max_num_hands=self.max_hands,
+            min_tracking_confidence=self.tracking_confidence,
+            min_detection_confidence=self.detection_confidence
+        )
 
         self.mpDraw = mp.solutions.drawing_utils
         self.landmark_list = []
@@ -31,7 +33,6 @@ class HandDetector:
         return image
 
     def find_position(self, image, hand_no=0, draw=True, draw_bounding_box=True):
-
         x_list = []
         y_list = []
         self.landmark_list = []
@@ -67,7 +68,6 @@ class HandDetector:
 
         # Fingers
         for id_ in range(1, 5):
-
             if self.landmark_list[self.tipIds[id_]][2] < self.landmark_list[self.tipIds[id_] - 2][2]:
                 fingers.append(1)
             else:
@@ -88,3 +88,24 @@ class HandDetector:
         length = math.hypot(x2 - x1, y2 - y1)
 
         return length, image, [x1, y1, x2, y2, cx, cy]
+
+# Initialize the HandDetector class
+detector = HandDetector()
+
+# Initialize the video capture object
+cap = cv2.VideoCapture(0)
+
+while cap.isOpened():
+    success, img = cap.read()
+    img = detector.find_hands(img)
+
+    # Your additional code for processing hand landmarks and drawing them goes here
+
+    cv2.imshow("Image", img)
+
+    # Wait for 'q' key to be pressed to exit
+    if cv2.waitKey(1) == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
