@@ -1,62 +1,43 @@
 import cv2
-import time
-import os
-import HandTracking as ht
-
-#############################################################
-cam_width, cam_height = 640, 480
-previous_time = 0
-#############################################################
-
-# Create the 'finger_image' directory if it doesn't exist
-folder_path = "finger_image"
-if not os.path.exists(folder_path):
-    os.mkdir(folder_path)
-
-my_list = os.listdir(folder_path)
-overlay_list = []
-
-for path in my_list:
-    image = cv2.imread(f'{folder_path}/{path}')
-    overlay_list.append(image)
-
-detector = ht.HandDetector(detection_confidence=0.70)
-
-tip_id = [4, 8, 12, 16, 20]
+import mediapipe as mp
 
 cap = cv2.VideoCapture(0)
-cap.set(3, cam_width)
-cap.set(4, cam_height)
+mp_Hands = mp.solutions.hands
+hands = mp_Hands.Hands()
+mpDraw = mp.solutions.drawing_utils
+finger_Coord = [(8, 6), (12, 10), (16, 14), (20, 18)]
+thumb_Coord = (4, 2)
 
-while cap.isOpened():
-    success, img = cap.read()
-    img = detector.find_hands(img)
+while True:
+    success, image = cap.read()
+    RGB_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = hands.process(RGB_image)
+    multiLandMarks = results.multi_hand_landmarks
 
-    landmark_list, _ = detector.find_position(img, draw=False)
+    if multiLandMarks:
+        handList = []
+        for handLms in multiLandMarks:
+            mpDraw.draw_landmarks(image, handLms, mp_Hands.HAND_CONNECTIONS)
+            for idx, lm in enumerate(handLms.landmark):
+                h, w, c = image.shape
+                cx, cy = int(lm.x * w), int(lm.y * h)
+                handList.append((cx, cy))
 
-    if len(landmark_list) != 0:
-        fingers = detector.fingers_up()
+        for point in handList:
+            cv2.circle(image, point, 10, (255, 255, 0), cv2.FILLED)
 
-        total_fingers = fingers.count(1)
+        upCount = 0
+        for coordinate in finger_Coord:
+            if handList[coordinate[0]][1] < handList[coordinate[1]][1]:
+                upCount += 1
+        if handList[thumb_Coord[0]][0] > handList[thumb_Coord[1]][0]:
+            upCount += 1
 
-        if total_fingers < len(overlay_list):
-            h, w, c = overlay_list[total_fingers].shape
-            img[0:h, 0:w] = overlay_list[total_fingers]
-        else:
-            # Handle the case when total_fingers is out of range
-            # You can display a message or take appropriate action
-            pass  # Replace 'pass' with your desired error handling or action
+        cv2.putText(image, str(upCount), (150, 150), cv2.FONT_HERSHEY_PLAIN, 12, (0, 255, 0), 12)
 
-        cv2.rectangle(img, (20, 300), (170, 475), (0, 255, 0), cv2.FILLED)
-        cv2.putText(img, text=str(total_fingers), org=(50, 450), fontFace=cv2.FONT_HERSHEY_PLAIN, fontScale=8,
-                    color=(255, 0, 0), thickness=20)
+    cv2.imshow("Counting number of fingers", image)
+    if cv2.waitKey(1) == 27:  # Press 'Esc' key to exit the loop
+        break
 
-    current_time = time.time()
-    fps = 1 / (current_time - previous_time)
-    previous_time = current_time
-
-    cv2.putText(img, text=f"FPS : {int(fps)}", org=(400, 70), fontFace=cv2.FONT_HERSHEY_PLAIN, fontScale=2,
-                color=(255, 0, 0), thickness=3)
-
-    cv2.imshow("Image", img)
-    cv2.waitKey(1)
+cap.release()
+cv2.destroyAllWindows()
