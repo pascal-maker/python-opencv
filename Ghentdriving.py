@@ -4,6 +4,48 @@ import math
 import numpy as np
 from ultralytics import YOLO
 
+# Define the body part indices
+body_index = {
+    "nose": 0,
+    "left_eye": 1,
+    "right_eye": 2,
+    "left_ear": 3,
+    "right_ear": 4,
+    "left_shoulder": 5,
+    "right_shoulder": 6,
+    "left_elbow": 7,
+    "right_elbow": 8,
+    "left_wrist": 9,
+    "right_wrist": 10,
+    "left_hip": 11,
+    "right_hip": 12,
+    "left_knee": 13,
+    "right_knee": 14,
+    "left_ankle": 15,
+    "right_ankle": 16,
+}
+
+# Body part colors
+part_colors = {
+    "nose": (255, 0, 0),
+    "left_eye": (0, 255, 0),
+    "right_eye": (0, 0, 255),
+    "left_ear": (255, 255, 0),
+    "right_ear": (255, 0, 255),
+    "left_shoulder": (0, 255, 255),
+    "right_shoulder": (255, 255, 255),
+    "left_elbow": (128, 128, 0),
+    "right_elbow": (0, 128, 128),
+    "left_wrist": (128, 0, 128),
+    "right_wrist": (0, 128, 0),
+    "left_hip": (128, 0, 0),
+    "right_hip": (0, 128, 0),
+    "left_knee": (0, 0, 128),
+    "right_knee": (128, 0, 0),
+    "left_ankle": (0, 0, 0),
+    "right_ankle": (255, 255, 255),
+}
+
 cap = cv2.VideoCapture('/Users/pascal/Desktop/ghentbycar.mp4')
 model_object_detection = YOLO('yolov8n.pt')
 model_pose_detection = YOLO("yolov8s-pose.pt")
@@ -54,7 +96,9 @@ while 1:
                         for pose_result in pose_results:
                             keypoints = pose_result.keypoints.data[0]
                             for i, (x, y, _) in enumerate(keypoints):
-                                cv2.circle(frame, (int(x) + x1, int(y) + y1), 5, (0, 255, 0), -1)
+                                x, y = int(x) + x1, int(y) + y1
+                                color = part_colors.get(list(body_index.keys())[i], (0, 255, 0))  # Default to green if color not defined
+                                cv2.circle(frame, (x, y), 5, color, -1)
 
     track_result = tracker.update(detections)
     cv2.line(frame, (line[0], line[1]), (line[2], line[3]), (0, 255, 255), 7)
