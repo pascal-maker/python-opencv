@@ -76,9 +76,9 @@ def run(
     """
     Run Region counting on a video using YOLOv8 and ByteTrack.
 
-    Supports movable region for real time counting inside specific area.
+    Supports movable region for real-time counting inside a specific area.
     Supports multiple regions counting.
-    Regions can be Polygons or rectangle in shape
+    Regions can be Polygons or rectangles in shape.
 
     Args:
         weights (str): Model weights path.
@@ -198,7 +198,7 @@ def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str, default='yolov8n.pt', help='initial weights path')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--source', type=str, required=True, help='video file path')
+    parser.add_argument('--source', type=str, help='video file path')
     parser.add_argument('--view-img', action='store_true', help='show results')
     parser.add_argument('--save-img', action='store_true', help='save results')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
