@@ -12,3 +12,4 @@ python yolov8_region_counter.py --source "path/to/video.mp4" --save-img --weight
 python yolov8_region_counter.py --source "path/to/video.mp4" --view-img
 #for example
 python regiondetection.py --source "/Users/pascal/Desktop/seppevideo.mp4" --save-img --view-img
+ to update you can use this command: pip3 install --upgrade ultralytics
