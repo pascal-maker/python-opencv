@@ -1,16 +1,23 @@
 import cv2
 from ultralytics import YOLO
+from roboflow import Roboflow
+from IPython.display import Image, display
 
-# Load the YOLO model
-model = YOLO("yolov8-soccer.pt")
+# Define model path, video path, and output video path
+MODEL_PATH = '/Users/pascal/desktop/yolov8m-football-1.pt'
+VIDEO_PATH = '/Users/pascal/Desktop/soccer.mp4'
+OUTPUT_VIDEO_PATH = '/Users/pascal/Desktop/soccer_output.mp4'
 
-# Video paths
-MODEL_PATH = '/Users/pascal/desktop/best.pt'
-video_path = '/Users/pascal/Desktop/soccer.mp4'
-output_video_path = '/Users/pascal/Desktop/soccer_output.mp4'
+
+# Train the YOLO model with the specified dataset
+model = YOLO("yolov8m-football.pt")
+results = model.train( epochs=10, imgsz=320)
+
+# Load the trained YOLO model
+model = YOLO(MODEL_PATH)
 
 # Open the video file
-cap = cv2.VideoCapture(video_path)
+cap = cv2.VideoCapture(VIDEO_PATH)
 
 # Get video properties
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -19,7 +26,7 @@ frame_rate = int(cap.get(cv2.CAP_PROP_FPS))
 
 # Define the codec and create VideoWriter object
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-out = cv2.VideoWriter(output_video_path, fourcc, frame_rate, (frame_width, frame_height))
+out = cv2.VideoWriter(OUTPUT_VIDEO_PATH, fourcc, frame_rate, (frame_width, frame_height))
 
 # Loop through the video frames
 while cap.isOpened():

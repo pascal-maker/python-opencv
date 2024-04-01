@@ -18,16 +18,16 @@ dataset = project.version(1).download("yolov8")
 clearml.browser_login()
 
 # Define model & data path
-model = YOLO('yolov8n.pt')
+model = YOLO('yolov8m-football.pt')
 DATASET_PATH = "/Users/pascal/Desktop/fcberdi.v1i.yolov8/data.yaml"
 
 # Train the model with CUDA or MPS
 results = model.train(data=DATASET_PATH, epochs=10, imgsz=320)
 
 # Define video path & model path
-MODEL_PATH = '/Users/pascal/desktop/best.pt'
+MODEL_PATH = '/Users/pascal/desktop/yolov8m-football-1.pt'
 VIDEO_PATH = '/Users/pascal/desktop/fcberdi.mp4'
-OUTPUT_VIDEO_PATH = '/Users/pascal/desktop/fcberdi_output.mp4'
+OUTPUT_VIDEO_PATH = '/Users/pascal/desktop/fcberdisco_output.mp4'
 
 def detect_on_frame(model_path, video_path, frame_number, conf_threshold=0.35):
     """Extracts a specific frame from a video, runs YOLOv8 detection on it, and displays the result.
