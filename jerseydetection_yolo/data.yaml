@@ -1,0 +1,6 @@
+path: /Users/pascal-maker/python-opencv/jerseydetection_yolo
+train: images/train
+val:   images/train   # small dataset — reuse train as val
+
+nc: 1
+names: ['jerseynumber']
