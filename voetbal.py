@@ -1,3 +1,4 @@
+import os
 from roboflow import Roboflow
 import clearml
 from ultralytics import YOLO
@@ -8,8 +9,12 @@ import numpy as np
 from IPython.display import Image, display
 import io
 
+ROBOFLOW_API_KEY = os.environ.get("ROBOFLOW_API_KEY")
+if not ROBOFLOW_API_KEY:
+    raise RuntimeError("ROBOFLOW_API_KEY environment variable is required")
+
 # Download the dataset stored on Roboflow
-rf = Roboflow(api_key="lvJtfzYNSRQrGmcNtdUd")
+rf = Roboflow(api_key=ROBOFLOW_API_KEY)
 project = rf.workspace().project("fcberdi")
 model = project.version(1).model
 dataset = project.version(1).download("yolov8")

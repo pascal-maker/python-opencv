@@ -42,7 +42,10 @@ while cv.waitKey(1) < 0:
     out = net.forward()
     out = out[:, :19, :, :]  # MobileNet output [1, 57, -1, -1], we only need the first 19 elements
 
-    assert len(BODY_PARTS) == out.shape[1]
+    if len(BODY_PARTS) != out.shape[1]:
+        raise RuntimeError(
+            f"Unexpected pose output shape: expected {len(BODY_PARTS)} body parts, got {out.shape[1]}"
+        )
 
     # Extract points from the neural network output
     points = []
